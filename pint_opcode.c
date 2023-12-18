@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Monty.h"
+#include "monty.h"
 
 /**
  * pint - Prints the value at the top of the stack.
