@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include "Monty.h"
 
 /**
@@ -11,36 +10,20 @@
  */
 void push(stack_t **stack, unsigned int line_number)
 {
-    char *arg;
-    int num;
-
     // Check if there is an argument
-    if (!stack)
+    if (!stack || !line_number)
     {
         fprintf(stderr, "L%u: usage: push integer\n", line_number);
         exit(EXIT_FAILURE);
     }
 
     // Get the integer from the argument
-    arg = strtok(NULL, " \n\t\r");
-    if (!arg || *arg == '\0')
+    char *arg = strtok(NULL, " \n\t\r");
+    if (!arg || !isdigit(*arg))
     {
         fprintf(stderr, "L%u: usage: push integer\n", line_number);
         exit(EXIT_FAILURE);
     }
-
-    // Check if the argument is a valid integer
-    for (int i = 0; arg[i]; i++)
-    {
-        if (!isdigit(arg[i]) && arg[i] != '-')
-        {
-            fprintf(stderr, "L%u: usage: push integer\n", line_number);
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    // Convert the argument to an integer
-    num = atoi(arg);
 
     // Create a new node
     stack_t *new_node = malloc(sizeof(stack_t));
@@ -50,7 +33,7 @@ void push(stack_t **stack, unsigned int line_number)
         exit(EXIT_FAILURE);
     }
 
-    new_node->n = num;
+    new_node->n = atoi(arg);
     new_node->prev = NULL;
     new_node->next = *stack;
 
@@ -67,6 +50,8 @@ void push(stack_t **stack, unsigned int line_number)
  */
 void pall(stack_t **stack, unsigned int line_number)
 {
+    (void)line_number; // Unused parameter
+
     // Check if the stack is empty
     if (!stack || !*stack)
         return;
@@ -81,17 +66,17 @@ void pall(stack_t **stack, unsigned int line_number)
 }
 
 /**
- * main - Monty interpreter main function.
+ * main - Example usage.
  * @argc: Argument count.
  * @argv: Argument vector.
- * Return: EXIT_SUCCESS on success, EXIT_FAILURE on failure.
+ * Return: Always 0.
  */
 int main(int argc, char *argv[])
 {
     // Check if there is a file name argument
     if (argc != 2)
     {
-        fprintf(stderr, "USAGE: %s file\n", argv[0]);
+        fprintf(stderr, "Usage: %s file\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -122,11 +107,6 @@ int main(int argc, char *argv[])
             else if (strcmp(opcode, "pall") == 0)
                 pall(&stack, line_number);
             // Add more opcodes as needed
-            else
-            {
-                fprintf(stderr, "L%u: unknown instruction %s\n", line_number, opcode);
-                exit(EXIT_FAILURE);
-            }
         }
     }
 
@@ -144,5 +124,5 @@ int main(int argc, char *argv[])
     // Free allocated memory
     free(line);
 
-    return EXIT_SUCCESS;
+    return 0;
 }
